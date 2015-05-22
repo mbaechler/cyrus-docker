@@ -10,7 +10,13 @@ RUN apt-get -y install cyrus-imapd cyrus-admin sasl2-bin
 
 RUN mkdir -p /run/cyrus/proc && chown -R cyrus /run/cyrus
 
-ADD cyrus.conf /cyrus.conf
-ADD imapd.conf /imapd.conf
+ADD cyrus.conf /etc/cyrus.conf
+ADD imapd.conf /etc/imapd.conf
 
-CMD /usr/sbin/cyrmaster -M /cyrus.conf -C /imapd.conf
+# create some default use, cyrus is configured as admin in imapd.conf
+RUN echo "cyrus"|saslpasswd2 -u test -c cyrus -p
+RUN echo "bob"|saslpasswd2 -u test -c bob -p
+RUN echo "alice"|saslpasswd2 -u test -c alice -p
+
+CMD /usr/sbin/cyrmaster
+
